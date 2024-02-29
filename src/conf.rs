@@ -1,31 +1,41 @@
 use serde::{Deserialize, Serialize};
+
+pub struct LoggingConfig;
+
+impl LoggingConfig {
+    pub fn init() {
+        // 创建一个输出到控制台的 appender
+        log4rs::init_file("log4rs.yaml", Default::default()).unwrap();
+
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub  struct RedConfig {
-    pub host:Option<String>,
-    pub pwd:Option<String>,
-    pub port:Option<u16>,
-    pub db:Option<u16>,
+    #[serde(default = "default_host")]
+    pub host:String,
+    #[serde(default = "default_nil_string")]
+    pub pwd:String,
+    #[serde(default = "default_red_port")]
+    pub port:u16,
+    #[serde(default = "default_db")]
+    pub db:u16,
 }
 
-impl Default for RedConfig {
-    fn default() -> Self {
-        RedConfig {
-            host:Some(String::from("127.0.0.1")),
-            pwd: Some(String::from("")),
-            port: Some(6379),
-            db: Some(0),
-        }
-    }
+fn default_host() -> String {
+    "127.0.0.1".to_owned()
 }
 
-impl  RedConfig {
-    pub fn new(host:Option<String>,pwd:Option<String>,port:u16,db:u16)-> Self {
-        RedConfig {
-            host:Some(String::from(host)),
-            pwd: Some(String::from(pwd)),
-            port: Some(port),
-            db: Some(db),
-        }
-
-    }
+fn default_nil_string() -> String {
+    "".to_owned()
 }
+
+fn default_red_port() -> u16 {
+    6379
+}
+
+fn default_db() -> u16 {
+   1
+}
+
+

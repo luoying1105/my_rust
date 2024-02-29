@@ -1,14 +1,19 @@
 use std::fs::File;
-use std::io::Read;
-
 mod conf;slint::include_modules!();
 use conf:: RedConfig;
-
-// slint宏，创建 UI
+use conf:: LoggingConfig;
+use log::{debug, info};
+use std::io::BufReader;
 
 fn main() {
-    let mut f = File::open("config.yml").expect("无法读取配置");
-    let mut scrape_config:RedConfig = serde_yaml::from_reader(f).expect("Could not read values.");
-    println!("{:?}", scrape_config);
+     // 初始化日志配置
+    LoggingConfig::init();
+    debug!("booting up");
+    let file = File::open("config.json").unwrap();
+    let reader = BufReader::new(file);
+    let config: RedConfig = serde_json::from_reader(reader).unwrap();
+    info!("red setting is {}:{}", config.host,config.port);
     MainWindow::new().unwrap().run().unwrap();
+
+
 }
